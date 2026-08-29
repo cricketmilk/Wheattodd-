@@ -1,0 +1,21 @@
+# Raw generations are large (13MB+) and are source material, not deliverables.
+# Keep them locally; the optimised assets/web/ files are what actually ship.
+# Drop the line below if you decide the originals belong in history.
+assets/raw/
+
+# Local previews and scratch
+assets/_preview.png
+assets/**/_*.png
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets — never commit a token
+.token
+secrets.json
+.env
+.dev.vars

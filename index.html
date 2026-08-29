@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WHEAT TODD</title>
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="WHEAT TODD">
+<meta property="og:image" content="/assets/web/todd.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#05030a;
+    --cyan:#3ad9f0;
+    --magenta:#ff2bd1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--ink);
+    color:#fff;
+    overflow:hidden;
+    font-family:"Anton",ui-sans-serif,system-ui,sans-serif;
+  }
+
+  .stage{position:fixed;inset:0;overflow:hidden}
+
+  /* ---- the field: DEAD STILL. Nothing here moves, ever. --------------- */
+  .field{
+    position:absolute;inset:0;
+    background:url("assets/web/field.jpg") center/cover no-repeat;
+  }
+
+  /* ---- the only moving thing: clouds, drifting across the sky ---------
+     Masked by skymask.png, which is keyed off the artwork's own magenta
+     sky. That means the clouds slide BEHIND every wheat stalk and tree
+     instead of over them - the field stays untouched, the sky lives. */
+  .clouds{
+    position:absolute;
+    top:0;left:0;
+    width:200%;
+    height:34%;
+    background:url("assets/web/clouds.png") left top/50% 100% repeat-x;
+    opacity:.85;
+    animation:drift 90s linear infinite;
+    will-change:transform;
+  }
+  @keyframes drift{
+    from{transform:translate3d(0,0,0)}
+    to  {transform:translate3d(-50%,0,0)}
+  }
+
+  .skymask{
+    position:absolute;inset:0;
+    overflow:hidden;
+    -webkit-mask-image:url("assets/web/skymask.png");
+            mask-image:url("assets/web/skymask.png");
+    -webkit-mask-size:cover;  mask-size:cover;
+    -webkit-mask-position:center; mask-position:center;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  }
+
+  /* a second, slower, fainter pass so the sky never reads as one loop */
+  .clouds.slow{
+    height:26%;
+    opacity:.45;
+    animation-duration:150s;
+    animation-direction:reverse;
+  }
+
+  .vignette{
+    position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 58%,transparent 42%,rgba(5,3,10,.66) 100%);
+  }
+
+  /* ---- Todd: still, planted, the fixed point -------------------------- */
+  .todd{
+    position:absolute;
+    left:50%;bottom:0;
+    height:86vh;width:auto;max-width:none;
+    transform:translateX(-50%);
+    filter:drop-shadow(0 0 70px rgba(58,217,240,.22));
+  }
+
+  /* ---- the name ------------------------------------------------------- */
+  .name{
+    position:absolute;
+    left:0;right:0;top:5vh;
+    text-align:center;
+    font-family:"Anton",ui-sans-serif,system-ui,sans-serif;
+    font-weight:400;
+    font-size:clamp(52px,15vw,210px);
+    line-height:.9;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color:#fff;
+    /* one soft neon bloom keyed to the artwork, no colour fringing */
+    text-shadow:
+      0 0 18px rgba(58,217,240,.55),
+      0 0 55px rgba(255,43,209,.35),
+      0 4px 0 rgba(5,3,10,.55);
+    pointer-events:none;
+  }
+
+  @media (max-width:760px){
+    .todd{height:64vh}
+    .name{top:7vh}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .clouds{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="field"></div>
+
+    <div class="skymask">
+      <div class="clouds"></div>
+      <div class="clouds slow"></div>
+    </div>
+
+    <img class="todd" src="assets/web/todd.png"
+         alt="Wheat Todd, a gaunt wheat-stalk figure with two glowing eyes, standing in a field at night.">
+
+    <h1 class="name">Wheat&nbsp;Todd</h1>
+
+    <div class="vignette"></div>
+  </div>
+</body>
+</html>
