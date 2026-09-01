@@ -1,0 +1,13 @@
+# Cloudflare Workers config for wheattodd.
+#
+# Phase 0: STATIC ASSETS ONLY. This serves index.html + the visualization
+# files (glitch.js / scene.js / pulse.js / pulse.css) as a plain static site.
+# There is no Worker script yet - the node-B /pulse.json worker and the Hive
+# Durable Object binding are Phase 1 (see the plan). This file exists so the
+# Workers Builds integration connected to this repo has a valid config to
+# deploy, instead of failing `wrangler deploy` on every push.
+name = "wheattodd"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./public"
