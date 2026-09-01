@@ -26,7 +26,13 @@ import { makeScene } from "./scene.js";
 // ------------------------------------------------------------------ config
 const params = new URLSearchParams(location.search);
 const CFG = window.__PULSE_CONFIG__ || {};
-const USE_MOCK = CFG.mock ?? params.has("mock");
+// Mock is the DEFAULT until the live feed exists: a page that only reacts to
+// real catches looks broken (identical to the old static hero) while
+// /pulse.json is still a 404. So we probe the endpoint once at startup - if it
+// answers, we use the real trap and the demo never runs; if it 404s, we fall
+// back to the mock and SAY SO on the page. ?mock=1 forces the demo, ?mock=0
+// forces live (and stays quiet if there is no feed).
+const MOCK_FORCED = CFG.mock ?? (params.get("mock") === "1" || params.has("mock") ? params.get("mock") !== "0" : null);
 const ENDPOINT = CFG.endpoint || "/pulse.json";
 const INTERVAL = CFG.interval || 5000;
 const MAX_ON_STAGE = CFG.max || 6;
@@ -218,11 +224,40 @@ class MockSource {
 //   - recent[] is newest-first; a genuinely new catch changes recent[0].id.
 //   - a returning bot is updated IN PLACE (it does not jump to the top), so we
 //     watch totals.requests to know "something happened" and flash the glitch.
-function start() {
+// Is the real feed there? One HEAD-ish probe at startup. Any non-ok answer
+// (404 while node B is unbuilt, or a network error) means "no trap yet".
+async function feedExists() {
+  try {
+    const r = await fetch(ENDPOINT, { cache: "no-store" });
+    if (!r.ok) return false;
+    await r.json(); // must be real JSON, not an SPA index.html fallback
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// A small, permanent, honest marker. The field must never imply that demo
+// traffic is real bot traffic - if the glitches are synthetic, the page says so.
+function markDemo(on) {
+  let el = document.querySelector(".demo-note");
+  if (!on) { if (el) el.remove(); return; }
+  if (el) return;
+  el = document.createElement("div");
+  el.className = "demo-note";
+  el.textContent = "demonstration — simulated catches, no live trap yet";
+  document.body.appendChild(el);
+}
+
+async function start() {
   const root = document.querySelector(".swarm");
   if (!root) return; // page without a stage: nothing to do
   const stage = new Stage(root);
-  const source = USE_MOCK ? new MockSource() : new LiveSource();
+
+  // decide the source: explicit override wins, else probe for a real feed
+  const useMock = MOCK_FORCED === null ? !(await feedExists()) : MOCK_FORCED;
+  markDemo(useMock);
+  const source = useMock ? new MockSource() : new LiveSource();
   const scene = makeScene();
   let activity = 0;
 

@@ -14,6 +14,28 @@
 
 /* --activity (0..1, set on :root by scene.js) is how busy the trap is now. */
 
+/* Honesty marker: shown ONLY while the glitches are simulated, so demo traffic
+   can never be mistaken for real caught bots. Removed automatically the moment
+   /pulse.json answers. */
+.demo-note {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 4px 10px;
+  border: 1px solid rgba(232, 219, 190, 0.22);
+  border-radius: 999px;
+  background: rgba(5, 3, 10, 0.55);
+  color: #e8dbbe;
+  opacity: 0.62;
+  font: 500 10px/1.4 ui-monospace, "SF Mono", Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* accumulating wear where catches land - a canvas heat-map, low in the wheat */
 .scars {
   position: absolute;
