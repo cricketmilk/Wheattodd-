@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pulse.css">
 <style>
   :root{
     --ink:#05030a;
@@ -71,7 +72,7 @@
   }
 
   .vignette{
-    position:absolute;inset:0;pointer-events:none;
+    position:absolute;inset:0;pointer-events:none;z-index:5;
     background:radial-gradient(ellipse at 50% 58%,transparent 42%,rgba(5,3,10,.66) 100%);
   }
 
@@ -81,7 +82,24 @@
     left:50%;bottom:0;
     height:86vh;width:auto;max-width:none;
     transform:translateX(-50%);
-    filter:drop-shadow(0 0 70px rgba(58,217,240,.22));
+    z-index:4;                 /* the foreground figure, over the field glitches */
+    /* brightens as the trap gets busier (--activity set by scene.js) */
+    filter:drop-shadow(0 0 70px rgba(58,217,240,.22)) brightness(calc(1 + var(--activity,0)*.35));
+    animation:breathe 7s ease-in-out infinite;
+  }
+  /* Wheat Todd's eye-glow: a soft screen-blended bloom over the eyes, pulsed on
+     each catch by scene.js - cyan normally, red for a forged bot. */
+  .todd-glow{
+    position:absolute;left:50%;top:43%;
+    width:26vh;height:26vh;z-index:4;
+    transform:translate(-50%,-50%);
+    pointer-events:none;opacity:0;
+    mix-blend-mode:screen;filter:blur(7px);
+    background:radial-gradient(circle, var(--gc,#7ff0ff) 0%, transparent 68%);
+  }
+  @keyframes breathe{
+    0%,100%{transform:translateX(-50%) scale(1)}
+    50%{transform:translateX(-50%) scale(1.012)}
   }
 
   /* ---- the name ------------------------------------------------------- */
@@ -101,6 +119,7 @@
       0 0 18px rgba(58,217,240,.55),
       0 0 55px rgba(255,43,209,.35),
       0 4px 0 rgba(5,3,10,.55);
+    z-index:6;
     pointer-events:none;
   }
 
@@ -111,12 +130,15 @@
 
   @media (prefers-reduced-motion:reduce){
     .clouds{animation:none}
+    .todd{animation:none}
   }
 </style>
 </head>
 <body>
   <div class="stage">
     <div class="field"></div>
+    <canvas class="scars"></canvas>
+    <div class="weather"></div>
 
     <div class="skymask">
       <div class="clouds"></div>
@@ -125,10 +147,15 @@
 
     <img class="todd" src="assets/web/todd.png"
          alt="Wheat Todd, a gaunt wheat-stalk figure with two glowing eyes, standing in a field at night.">
+    <div class="todd-glow"></div>
 
     <h1 class="name">Wheat&nbsp;Todd</h1>
 
+    <!-- caught bots gather here; populated live by pulse.js (silent until /pulse.json exists) -->
+    <div class="swarm"></div>
+
     <div class="vignette"></div>
   </div>
+  <script type="module" src="pulse.js"></script>
 </body>
 </html>
